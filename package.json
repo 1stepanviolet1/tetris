@@ -1,0 +1,20 @@
+{
+  "name": "tetris",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/1stepanviolet1/tetris#readme",
+  "bugs": {
+    "url": "https://github.com/1stepanviolet1/tetris/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/1stepanviolet1/tetris.git"
+  },
+  "license": "MIT",
+  "author": "",
+  "type": "module",
+  "main": "js/script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}

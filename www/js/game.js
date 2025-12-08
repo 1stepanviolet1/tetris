@@ -12,13 +12,11 @@ export default class Game {
         this.previewContainer = null;
         this.previewBlocks = [];
         this.table_of_records = null;
-        
-        // Игровые константы
+
         this.BOARD_WIDTH = 10;
         this.BOARD_HEIGHT = 20;
         this.BLOCK_SIZE = 30;
         
-        // Игровые переменные
         this.score = 0;
         this.level = 1;
         this.lines = 0;
@@ -30,7 +28,6 @@ export default class Game {
         this.currentX = 0;
         this.currentY = 0;
         
-        // Фигуры тетриса
         this.SHAPES = [
             [[1, 1, 1, 1]], // I
             [[1, 1], [1, 1]], // O
@@ -38,7 +35,7 @@ export default class Game {
             [[1, 1, 1], [1, 0, 0]], // L
             [[1, 1, 1], [0, 0, 1]], // J
             [[0, 1, 1], [1, 1, 0]], // S
-            [[1, 1, 0], [0, 1, 1]]  // Z
+            [[1, 1, 0], [0, 1, 1]],  // Z
         ];
         
         this.COLORS = ['#00FFFF', '#FFFF00', '#800080', '#FFA500', '#0000FF', '#00FF00', '#FF0000'];
@@ -61,7 +58,6 @@ export default class Game {
         this.gameContainer = append_element('div', this.parent);
         this.gameContainer.className = 'game-container';
         
-        // Заголовок и статистика
         append_element('h2', this.gameContainer, `Игрок: ${this.currentUser.username}`);
         
         this.stats = append_element('div', this.gameContainer);
@@ -69,7 +65,6 @@ export default class Game {
 
         this.createPreview(this.gameContainer);
         
-        // Создаем canvas для игрового поля
         this.canvas = append_element('canvas', this.gameContainer);
         this.canvas.width = this.BOARD_WIDTH * this.BLOCK_SIZE;
         this.canvas.height = this.BOARD_HEIGHT * this.BLOCK_SIZE;
@@ -78,7 +73,6 @@ export default class Game {
 
         this.table_of_records = new TableOfRecords(this.gameContainer);
         
-        // Кнопки управления
         const controls = append_element('div', this.gameContainer);
         controls.className = 'game-controls';
         
@@ -91,7 +85,6 @@ export default class Game {
         const logoutBtn = append_element('button', controls, 'Выйти');
         logoutBtn.addEventListener('click', () => this.logout());
         
-        // Обработка клавиатуры
         document.addEventListener('keydown', (e) => this.handleInput(e));
     }
 
@@ -152,7 +145,6 @@ export default class Game {
     }
 
     initBoard() {
-        // Создаем пустое игровое поле
         this.boardMatrix = Array(this.BOARD_HEIGHT).fill().map(() => 
             Array(this.BOARD_WIDTH).fill(0)
         );
@@ -166,15 +158,12 @@ export default class Game {
     }
 
     spawnPiece() {
-        // Берем фигуру из превью
         this.currentPiece = this.nextPiece;
         this.pieceColor = this.nextPieceColor;
         
-        // Начальная позиция
         this.currentX = Math.floor(this.BOARD_WIDTH / 2) - Math.floor(this.currentPiece[0].length / 2);
         this.currentY = 0;
         
-        // Проверяем game over
         if (this.checkCollision(this.currentX, this.currentY, this.currentPiece)) {
             this.gameOver();
         }
@@ -185,17 +174,14 @@ export default class Game {
         if (!this.isPlaying) return;
         this.render();
         
-        // Скорость зависит от уровня
         const speed = Math.max(100, 1000 - (this.level - 1) * 100);
         setTimeout(() => this.gameLoop(), speed);
     }
 
     update() {
-        // Двигаем фигуру вниз
         if (!this.checkCollision(this.currentX, this.currentY + 1, this.currentPiece)) {
             this.currentY++;
         } else {
-            // Фигура достигла дна или другой фигуры
             this.lockPiece();
             this.clearLines();
             this.spawnPiece();
@@ -204,13 +190,10 @@ export default class Game {
     }
 
     render() {
-        // Очищаем canvas
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         
-        // Рисуем установленные фигуры
         this.drawBoard();
         
-        // Рисуем текущую падающую фигуру
         this.drawPiece(this.currentX, this.currentY, this.currentPiece, this.pieceColor);
     }
 
@@ -248,7 +231,6 @@ export default class Game {
                     const newX = x + col;
                     const newY = y + row;
                     
-                    // Проверка границ и других фигур
                     if (newX < 0 || newX >= this.BOARD_WIDTH || 
                         newY >= this.BOARD_HEIGHT || 
                         (newY >= 0 && this.boardMatrix[newY][newX])) {
@@ -261,13 +243,12 @@ export default class Game {
     }
 
     lockPiece() {
-        // Фиксируем фигуру на поле
         for (let row = 0; row < this.currentPiece.length; row++) {
             for (let col = 0; col < this.currentPiece[row].length; col++) {
                 if (this.currentPiece[row][col]) {
                     const y = this.currentY + row;
                     const x = this.currentX + col;
-                    if (y >= 0) { // Проверяем, чтобы не выйти за верхнюю границу
+                    if (y >= 0) {
                         this.boardMatrix[y][x] = this.pieceColor;
                     }
                 }
@@ -280,12 +261,10 @@ export default class Game {
         
         for (let y = this.BOARD_HEIGHT - 1; y >= 0; y--) {
             if (this.boardMatrix[y].every(cell => cell !== 0)) {
-                // Удаляем заполненную линию
                 this.boardMatrix.splice(y, 1);
-                // Добавляем новую пустую линию сверху
                 this.boardMatrix.unshift(Array(this.BOARD_WIDTH).fill(0));
                 linesCleared++;
-                y++; // Проверяем ту же позицию снова
+                y++;
             }
         }
         
@@ -350,7 +329,6 @@ export default class Game {
         append_element('div', this.stats, `Счет: ${this.score}`);
         append_element('div', this.stats, `Линии: ${this.lines}`);
         append_element('div', this.stats, `Уровень: ${this.level}`);
-        // TODO: не обновляется рекорд при завершении игры
         append_element('div', this.stats, `Рекорд: ${this.currentUser.bestScore}`);
     }
 
